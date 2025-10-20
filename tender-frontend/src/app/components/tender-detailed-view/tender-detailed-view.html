@@ -1,0 +1,569 @@
+<div class="tender-detailed-content">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading tender details...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!tender && !isLoading && dataValidationErrors.length > 0" class="error-state">
+    <h3>Error Loading Tender</h3>
+    <ul>
+      <li *ngFor="let error of dataValidationErrors">{{ error }}</li>
+    </ul>
+    <button (click)="router.navigate(['/search'])" class="back-to-search-btn">
+      Back to Search
+    </button>
+    <button (click)="testBackend()" class="test-backend-btn">
+      Test Backend
+    </button>
+  </div>
+
+  <!-- Header Section -->
+  <div class="tender-header" *ngIf="tender">
+    <h2 class="tender-title">
+      {{ 
+        tender['title']?.['DE'] || 
+        tender['title']?.['EN'] || 
+        tender['title']?.['FR'] || 
+        tender['title']?.['IT'] || 
+        tender['metadata']?.['tender_title'] ||
+        "Not specified" 
+      }}
+    </h2>
+    <div class="tender-meta">
+    </div>
+  </div>
+
+  <!-- Main Content Sections -->
+  <div class="content-sections" *ngIf="tender">
+
+    <!-- Publication Dates Section -->
+    <div class="section" *ngIf="tender['project_publication_date']">
+      <h3 class="section-title">
+        <i class="icon">📅</i>
+        Publication Information
+      </h3>
+      <div class="section-content">
+        <div class="date-grid">
+          <div class="date-item" *ngIf="tender['project_publication_date']?.['publication_date']">
+            <strong>Publication Date:</strong>
+            <span>{{ tender['project_publication_date']['publication_date'] || 'Not specified' }}</span>
+          </div>
+          <div class="date-item" *ngIf="tender['project_publication_date']?.['inital_publication_date']">
+            <strong>Initial Publication:</strong>
+            <span>{{ tender['project_publication_date']['inital_publication_date'] || 'Not specified' }}</span>
+          </div>
+          <div class="date-item" *ngIf="tender['project_publication_date']?.['specific_dead_lines_and_formal_requirements']">
+            <strong>Specific Deadlines:</strong>
+            <div [innerHTML]="getMultilingualText(tender['project_publication_date']['specific_dead_lines_and_formal_requirements'])"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Description Section -->
+    <div class="section" *ngIf="tender['procurement']?.['order_desciption']?.['order']">
+      <h3 class="section-title">
+        <i class="icon">📋</i>
+        Order Description
+      </h3>
+      <div class="section-content">
+        <div class="description-text" [innerHTML]="getMultilingualText(tender['procurement']['order_desciption']['order'])"></div>
+        
+        <!-- Order Address -->
+        <div class="order-address" *ngIf="tender['procurement']['order_desciption']['order_address']">
+          <h4>Order Location</h4>
+          <div class="address-details">
+            <span *ngIf="tender['procurement']['order_desciption']['order_address']['city']">
+              {{ getMultilingualText(tender['procurement']['order_desciption']['order_address']['city']) }}
+            </span>
+            <span *ngIf="tender['procurement']['order_desciption']['order_address']['postal_code']">
+              {{ tender['procurement']['order_desciption']['order_address']['postal_code'] }}
+            </span>
+            <span *ngIf="tender['procurement']['order_desciption']['order_address']['canton_id']">
+              Canton: {{ tender['procurement']['order_desciption']['order_address']['canton_id'] }}
+            </span>
+            <span *ngIf="tender['procurement']['order_desciption']['order_address']['country_id']">
+              Country: {{ tender['procurement']['order_desciption']['order_address']['country_id'] }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Order Address Description -->
+        <div *ngIf="tender['procurement']['order_desciption']['order_address_description']" class="address-description">
+          <h4>Address Description</h4>
+          <div [innerHTML]="getMultilingualText(tender['procurement']['order_desciption']['order_address_description'])"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Procurement Details Section -->
+    <div class="section" *ngIf="tender['procurement']">
+      <h3 class="section-title">
+        <i class="icon">🏗️</i>
+        Procurement Details
+      </h3>
+      <div class="section-content">
+        <div class="procurement-grid">
+          <!-- Supply Type -->
+          <div class="proc-item" *ngIf="tender['procurement']['supply_type']">
+            <strong>Supply Type:</strong>
+            <span>{{ tender['procurement']['supply_type'] || 'Not specified' }}</span>
+          </div>
+
+          <!-- Contract Information -->
+          <div class="proc-item" *ngIf="tender['procurement']['contract_deadline_type']">
+            <strong>Contract Deadline Type:</strong>
+            <span>{{ tender['procurement']['contract_deadline_type'] || 'Not specified' }}</span>
+          </div>
+
+          <div class="proc-item" *ngIf="tender['procurement']['contract_period']">
+            <strong>Contract Period:</strong>
+            <span>{{ tender['procurement']['contract_period'] || 'Not specified' }}</span>
+          </div>
+
+          <div class="proc-item" *ngIf="tender['procurement']['contract_days']">
+            <strong>Contract Days:</strong>
+            <span>{{ tender['procurement']['contract_days'] || 'Not specified' }}</span>
+          </div>
+        </div>
+
+        <!-- Execution Notes -->
+        <div class="execution-section" *ngIf="tender['procurement']['execution_notes_and_variants_part_off']">
+          <h4>Execution Information</h4>
+          
+          <div *ngIf="tender['procurement']['execution_notes_and_variants_part_off']['execution_note']" class="execution-note">
+            <strong>Execution Note:</strong>
+            <div [innerHTML]="getMultilingualText(tender['procurement']['execution_notes_and_variants_part_off']['execution_note'])"></div>
+          </div>
+
+          <div *ngIf="tender['procurement']['execution_notes_and_variants_part_off']['variants_note']" class="variants-note">
+            <strong>Variants Note:</strong>
+            <div [innerHTML]="getMultilingualText(tender['procurement']['execution_notes_and_variants_part_off']['variants_note'])"></div>
+          </div>
+
+          <div *ngIf="tender['procurement']['execution_notes_and_variants_part_off']['partial_offer_note']" class="partial-note">
+            <strong>Partial Offers Note:</strong>
+            <div [innerHTML]="getMultilingualText(tender['procurement']['execution_notes_and_variants_part_off']['partial_offer_note'])"></div>
+          </div>
+
+          <!-- Execution Periods -->
+          <div *ngIf="tender['procurement']['execution_notes_and_variants_part_off']['execution_period']?.length" class="execution-periods">
+            <strong>Execution Periods:</strong>
+            <div class="period-list">
+              <div *ngFor="let period of tender['procurement']['execution_notes_and_variants_part_off']['execution_period']" class="period-item">
+                <span *ngIf="period['Starts on: ']">From: {{ period['Starts on: '] }}</span>
+                <span *ngIf="period['Ends on']">To: {{ period['Ends on'] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contract Extension -->
+        <div *ngIf="tender['procurement']['can_contract_be_extendedNote']" class="extension-note">
+          <strong>Contract Extension:</strong>
+          <div [innerHTML]="getMultilingualText(tender['procurement']['can_contract_be_extendedNote'])"></div>
+        </div>
+
+        <!-- Options Note -->
+        <div *ngIf="tender['procurement']['options_note']" class="options-note">
+          <strong>Options:</strong>
+          <div [innerHTML]="getMultilingualText(tender['procurement']['options_note'])"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CPV Codes Section -->
+    <div class="section" *ngIf="tender['cpv_and_labels']?.length">
+      <h3 class="section-title">
+        <i class="icon">🏷️</i>
+        CPV Classification
+      </h3>
+      <div class="section-content">
+        <div class="cpv-grid">
+          <div class="cpv-item" *ngFor="let cpv of tender['cpv_and_labels']; let i = index">
+            <div class="cpv-header">
+              <span class="cpv-type">{{ i === 0 ? 'Main CPV' : 'Additional CPV' }}</span>
+            </div>
+            <div class="cpv-code">
+              <strong>Code:</strong> {{ cpv['cpv_code'] || cpv['additional_cpv_base'] }}
+            </div>
+            <div class="cpv-label">
+              <strong>Description:</strong> 
+              {{ cpv['cpv_labels'] || cpv['additional_cpvs_labels'] || "Not specified" }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BKP Codes Section -->
+    <div class="section" *ngIf="tender['bkp_details']?.length">
+      <h3 class="section-title">
+        <i class="icon">📊</i>
+        BKP Classification
+      </h3>
+      <div class="section-content">
+        <div class="bkp-grid">
+          <div class="bkp-item" *ngFor="let bkp of tender['bkp_details']">
+            <div class="bkp-code">
+              <strong>Code:</strong> {{ bkp['bkp_code'] }}
+            </div>
+            <div class="bkp-label">
+              <strong>Description:</strong> {{ bkp['bkp_labels'] || "Not specified" }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Offer Information Section -->
+    <div class="section" *ngIf="tender['offer_information']">
+      <h3 class="section-title">
+        <i class="icon">📝</i>
+        Offer Information
+      </h3>
+      <div class="section-content">
+        <div class="offer-grid">
+          <div class="offer-item" *ngIf="tender['offer_information']?.['offer_deadline']">
+            <strong>Offer Deadline:</strong>
+            <span class="deadline-date">{{ tender['offer_information']['offer_deadline'] || 'Not specified' }}</span>
+          </div>
+
+          <div class="offer-item" *ngIf="tender['offer_information']?.['offer_validity_deadline_date']">
+            <strong>Validity Deadline:</strong>
+            <span>{{ tender['offer_information']['offer_validity_deadline_date'] || 'Not specified' }}</span>
+          </div>
+
+          <div class="offer-item" *ngIf="tender['offer_information']?.['offer_opening']">
+            <strong>Offer Opening:</strong>
+            <span>{{ tender['offer_information']['offer_opening'] || 'Not specified' }}</span>
+          </div>
+
+          <div class="offer-item" *ngIf="tender['offer_information']?.['offer_oppening_city']">
+            <strong>Opening Location:</strong>
+            <span>{{ getMultilingualText(tender['offer_information']['offer_oppening_city']) }}</span>
+            <span *ngIf="tender['offer_information']?.['offer_oppening_postal_code']">
+              ({{ tender['offer_information']['offer_oppening_postal_code'] }})
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="tender['offer_information']?.['offer_specific_note']" class="offer-notes">
+          <strong>Offer Specific Notes:</strong>
+          <div [innerHTML]="getMultilingualText(tender['offer_information']['offer_specific_note'])"></div>
+        </div>
+
+        <div *ngIf="tender['offer_information']?.['offer_oppening_notes']" class="opening-notes">
+          <strong>Opening Notes:</strong>
+          <div [innerHTML]="getMultilingualText(tender['offer_information']['offer_oppening_notes'])"></div>
+        </div>
+
+        <div *ngIf="tender['offer_information']?.['remarks']" class="offer-remarks">
+          <strong>Remarks:</strong>
+          <div [innerHTML]="getMultilingualText(tender['offer_information']['remarks'])"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Procurement Office Information -->
+    <div class="section" *ngIf="tender['procurement_information']">
+      <h3 class="section-title">
+        <i class="icon">🏢</i>
+        Procurement Office Information
+      </h3>
+      <div class="section-content">
+        <!-- Office Details -->
+        <div class="office-section" *ngIf="tender['procurement_information']?.['procurement_office_details']">
+          <h4>Procurement Office</h4>
+          <div class="contact-info">
+            <div *ngIf="tender['procurement_information']['procurement_office_details']['name']" class="contact-item">
+              <strong>Name:</strong> {{ getMultilingualText(tender['procurement_information']['procurement_office_details']['name']) }}
+            </div>
+            <div *ngIf="tender['procurement_information']['procurement_office_details']['contact_person']" class="contact-item">
+              <strong>Contact Person:</strong> {{ getMultilingualText(tender['procurement_information']['procurement_office_details']['contact_person']) }}
+            </div>
+            <div *ngIf="tender['procurement_information']['procurement_office_details']['phone']" class="contact-item">
+              <strong>Phone:</strong> {{ tender['procurement_information']['procurement_office_details']['phone'] || 'Not specified' }}
+            </div>
+            <div *ngIf="tender['procurement_information']['procurement_office_details']['email']" class="contact-item">
+              <strong>Email:</strong> 
+              <a href="mailto:{{ tender['procurement_information']['procurement_office_details']['email'] }}">
+                {{ tender['procurement_information']['procurement_office_details']['email'] || 'Not specified' }}
+              </a>
+            </div>
+            <div *ngIf="tender['procurement_information']['procurement_office_details']['url']" class="contact-item">
+              <strong>Website:</strong>
+              <a [href]="getMultilingualText(tender['procurement_information']['procurement_office_details']['url'])" target="_blank">
+                {{ getMultilingualText(tender['procurement_information']['procurement_office_details']['url']) }}
+              </a>
+            </div>
+          </div>
+
+          <!-- Office Address -->
+          <div class="address-section">
+            <strong>Address:</strong>
+            <div class="address-details">
+              <span *ngIf="tender['procurement_information']['procurement_office_details']['street']">
+                {{ getMultilingualText(tender['procurement_information']['procurement_office_details']['street']) }}
+              </span>
+              <span *ngIf="tender['procurement_information']['procurement_office_details']['city']">
+                {{ getMultilingualText(tender['procurement_information']['procurement_office_details']['city']) }}
+              </span>
+              <span *ngIf="tender['procurement_information']['procurement_office_details']['postal_code']">
+                {{ tender['procurement_information']['procurement_office_details']['postal_code'] }}
+              </span>
+              <span *ngIf="tender['procurement_information']['procurement_office_details']['canton_id']">
+                Canton: {{ tender['procurement_information']['procurement_office_details']['canton_id'] }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipient Details -->
+        <div class="recipient-section" *ngIf="tender['procurement_information']?.['procurement_recipient_details']">
+          <h4>Procurement Recipient</h4>
+          <div class="contact-info">
+            <div *ngIf="tender['procurement_information']['procurement_recipient_details']['name']" class="contact-item">
+              <strong>Name:</strong> {{ getMultilingualText(tender['procurement_information']['procurement_recipient_details']['name']) }}
+            </div>
+            <div *ngIf="tender['procurement_information']['procurement_recipient_details']['contact_person']" class="contact-item">
+              <strong>Contact Person:</strong> {{ getMultilingualText(tender['procurement_information']['procurement_recipient_details']['contact_person']) }}
+            </div>
+            <div *ngIf="tender['procurement_information']['procurement_recipient_details']['phone']" class="contact-item">
+              <strong>Phone:</strong> {{ tender['procurement_information']['procurement_recipient_details']['phone'] || 'Not specified' }}
+            </div>
+            <div *ngIf="tender['procurement_information']['procurement_recipient_details']['email']" class="contact-item">
+              <strong>Email:</strong>
+              <a href="mailto:{{ tender['procurement_information']['procurement_recipient_details']['email'] }}">
+                {{ tender['procurement_information']['procurement_recipient_details']['email'] || 'Not specified' }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Qualification Criteria Section -->
+    <div class="section" *ngIf="tender['qualification_criteria']?.length">
+      <h3 class="section-title">
+        <i class="icon">✅</i>
+        Qualification Criteria
+      </h3>
+      <div class="section-content">
+        <div class="criteria-list">
+          <div *ngFor="let criteria of tender['qualification_criteria']; let i = index" class="criteria-item">
+            <div *ngIf="criteria['criteria_titles']" class="criteria-card">
+              <h4>{{ getMultilingualText(criteria['criteria_titles']) }}</h4>
+              <div *ngIf="criteria['criteria_description']" class="criteria-description">
+                <strong>Description:</strong>
+                <div [innerHTML]="getMultilingualText(criteria['criteria_description'])"></div>
+              </div>
+              <div *ngIf="criteria['criteria_verification']" class="criteria-verification">
+                <strong>Verification:</strong>
+                <div [innerHTML]="getMultilingualText(criteria['criteria_verification'])"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Award Criteria Section -->
+    <div class="section" *ngIf="tender['award_criteria']?.length">
+      <h3 class="section-title">
+        <i class="icon">🎯</i>
+        Award Criteria
+      </h3>
+      <div class="section-content">
+        <div class="award-list">
+          <div *ngFor="let award of tender['award_criteria']; let i = index" class="award-item">
+            <div *ngIf="award['award_subtitle'] || award['award_description']" class="award-card">
+              <div class="award-header">
+                <h4 *ngIf="award['award_subtitle']">{{ getMultilingualText(award['award_subtitle']) }}</h4>
+                <span *ngIf="award['weighting']" class="award-weight">{{ award['weighting'] }}%</span>
+              </div>
+              
+              <div *ngIf="award['award_description']" class="award-description">
+                <div [innerHTML]="getMultilingualText(award['award_description'])"></div>
+              </div>
+
+              <div *ngIf="award['award_verification']" class="award-verification">
+                <strong>Verification:</strong>
+                <div [innerHTML]="getMultilingualText(award['award_verification'])"></div>
+              </div>
+
+              <div *ngIf="award['price_criterion'] !== null" class="price-criterion">
+                <strong>Price Criterion:</strong> {{ award['price_criterion'] ? 'Yes' : 'No' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents Information -->
+    <div class="section" *ngIf="tender['lots_and_documents_info']">
+      <h3 class="section-title">
+        <i class="icon">📁</i>
+        Documents & Lots Information
+      </h3>
+      <div class="section-content">
+        <div class="docs-grid">
+          <!-- Document Costs -->
+          <div *ngIf="tender['lots_and_documents_info']?.['documents_costs']" class="doc-costs">
+            <strong>Document Costs:</strong>
+            <span *ngIf="tender['lots_and_documents_info']['documents_costs']['docs_price']">
+              {{ tender['lots_and_documents_info']['documents_costs']['docs_price'] }}
+              {{ tender['lots_and_documents_info']['documents_costs']['docs_currency'] || 'Not specified' }}
+            </span>
+            <span *ngIf="!tender['lots_and_documents_info']['documents_costs']['docs_price']">Free</span>
+          </div>
+
+          <!-- Document Costs Note -->
+          <div *ngIf="tender['lots_and_documents_info']?.['documents_costs_note']" class="doc-costs-note">
+            <strong>Costs Note:</strong>
+            <div [innerHTML]="getMultilingualText(tender['lots_and_documents_info']['documents_costs_note'])"></div>
+          </div>
+
+          <!-- Document Source -->
+          <div *ngIf="tender['lots_and_documents_info']?.['document_source']" class="doc-source">
+            <strong>Document Source:</strong>
+            <div [innerHTML]="getMultilingualText(tender['lots_and_documents_info']['document_source'])"></div>
+          </div>
+
+          <!-- Lots Limitation -->
+          <div *ngIf="tender['lots_and_documents_info']?.['lots_limitation_note']" class="lots-limitation">
+            <strong>Lots Limitation:</strong>
+            <div [innerHTML]="getMultilingualText(tender['lots_and_documents_info']['lots_limitation_note'])"></div>
+          </div>
+
+          <!-- Documents Available Dates -->
+          <div *ngIf="tender['lots_and_documents_info']?.['documents_available_date']?.length" class="doc-availability">
+            <strong>Documents Available:</strong>
+            <div class="date-ranges">
+              <div *ngFor="let dateRange of tender['lots_and_documents_info']['documents_available_date']" class="date-range">
+                <span *ngIf="dateRange['Available from: ']">From: {{ dateRange['Available from: '] }}</span>
+                <span *ngIf="dateRange['Ends on: ']">Until: {{ dateRange['Ends on: '] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms and Conditions -->
+    <div class="section" *ngIf="tender['terms_and_conditions']">
+      <h3 class="section-title">
+        <i class="icon">📄</i>
+        Terms & Conditions
+      </h3>
+      <div class="section-content">
+        <div class="terms-grid">
+          <!-- Consortium Information -->
+          <div class="term-group">
+            <h4>Consortium Information</h4>
+            <div *ngIf="tender['terms_and_conditions']?.['consortium_allowed'] !== null" class="term-item">
+              <strong>Consortium Allowed:</strong> 
+              <span>{{ tender['terms_and_conditions']['consortium_allowed'] ? 'Yes' : 'No' }}</span>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['consortium_multi_application_allowed'] !== null" class="term-item">
+              <strong>Multi-Application Allowed:</strong> 
+              <span>{{ tender['terms_and_conditions']['consortium_multi_application_allowed'] ? 'Yes' : 'No' }}</span>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['consortium_Note']" class="term-note">
+              <strong>Consortium Note:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['consortium_Note'])"></div>
+            </div>
+          </div>
+
+          <!-- Subcontractor Information -->
+          <div class="term-group">
+            <h4>Subcontractor Information</h4>
+            <div *ngIf="tender['terms_and_conditions']?.['sub_contractor_allowed'] !== null" class="term-item">
+              <strong>Subcontractor Allowed:</strong> 
+              <span>{{ tender['terms_and_conditions']['sub_contractor_allowed'] ? 'Yes' : 'No' }}</span>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['sub_contractor_multi_application_allowed'] !== null" class="term-item">
+              <strong>Multi-Application Allowed:</strong> 
+              <span>{{ tender['terms_and_conditions']['sub_contractor_multi_application_allowed'] ? 'Yes' : 'No' }}</span>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['sub_contractor_note']" class="term-note">
+              <strong>Subcontractor Note:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['sub_contractor_note'])"></div>
+            </div>
+          </div>
+
+          <!-- Business Terms -->
+          <div class="term-group">
+            <h4>Business Terms</h4>
+            <div *ngIf="tender['terms_and_conditions']?.['terms_of_business']" class="term-item">
+              <strong>Terms of Business:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['terms_of_business'])"></div>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['terms_of_payment']" class="term-item">
+              <strong>Terms of Payment:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['terms_of_payment'])"></div>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['included_costs']" class="term-item">
+              <strong>Included Costs:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['included_costs'])"></div>
+            </div>
+          </div>
+
+          <!-- Additional Terms -->
+          <div class="term-group">
+            <h4>Additional Requirements</h4>
+            <div *ngIf="tender['terms_and_conditions']?.['security_deposits']" class="term-item">
+              <strong>Security Deposits:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['security_deposits'])"></div>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['non_WTO_requirements']" class="term-item">
+              <strong>Non-WTO Requirements:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['non_WTO_requirements'])"></div>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['other_requirements']" class="term-item">
+              <strong>Other Requirements:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['other_requirements'])"></div>
+            </div>
+          </div>
+
+          <!-- Legal Information -->
+          <div class="term-group">
+            <h4>Legal Information</h4>
+            <div *ngIf="tender['terms_and_conditions']?.['remediesNotice']" class="term-item">
+              <strong>Legal Remedies:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['remediesNotice'])"></div>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['pre_involved_vendor']" class="term-item">
+              <strong>Pre-Involved Vendor:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['pre_involved_vendor'])"></div>
+            </div>
+          </div>
+
+          <!-- Additional Notes -->
+          <div class="term-group" *ngIf="tender['terms_and_conditions']?.['walk_through_notes'] || tender['terms_and_conditions']?.['terms_note']">
+            <h4>Additional Notes</h4>
+            <div *ngIf="tender['terms_and_conditions']?.['walk_through_notes']" class="term-item">
+              <strong>Walk-Through Notes:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['walk_through_notes'])"></div>
+            </div>
+            <div *ngIf="tender['terms_and_conditions']?.['terms_note']" class="term-item">
+              <strong>Terms Note:</strong>
+              <div [innerHTML]="getMultilingualText(tender['terms_and_conditions']['terms_note'])"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Debug Section (Remove in production) -->
+  <div class="debug-section" *ngIf="false">
+    <h3>Debug: Raw Data</h3>
+    <pre>{{ tender | json }}</pre>
+  </div>
+</div>

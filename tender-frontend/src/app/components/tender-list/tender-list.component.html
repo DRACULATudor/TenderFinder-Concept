@@ -1,0 +1,116 @@
+<div class="tender-list-container">
+  <div class="loading" *ngIf="loading()">
+    <div class="spinner"></div>
+    <p>Loading tenders...</p>
+  </div>
+
+  <div class="error" *ngIf="error()">
+    <h3>Connection Error</h3>
+    <p>{{ error() }}</p>
+    <p><strong>Make sure your FastAPI backend is running:</strong></p>
+    <ol>
+      <li>Navigate to your backend directory</li>
+      <li>Activate your Python environment (TenderAI)</li>
+      <li>
+        Run: <code>uvicorn main:app --reload --host 0.0.0.0 --port 4002</code>
+      </li>
+    </ol>
+    <button (click)="retryLoad()" class="retry-btn">Retry Connection</button>
+  </div>
+
+  <div
+    *ngIf="!loading() && !error() && tenders().length === 0"
+    class="no-tenders"
+  >
+    <p>No tenders available at the moment.</p>
+  </div>
+
+  <div
+    *ngIf="!loading() && !error() && tenders().length > 0"
+    class="tenders-content"
+  >
+    <div class="summary">
+      <h2>Available Tenders</h2>
+      <div class="types-grid">
+        <div *ngFor="let type of getTenderTypes()" class="type-card">
+          <h3>{{ type }}</h3>
+          <span class="count">{{ getTendersByType(type).length }} tenders</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tenders-grid">
+      <div *ngFor="let tender of tenders()" class="tender-card">
+        <div class="tender-header">
+          <h3>{{ tender.title }}</h3>
+          <span
+            class="tender-status"
+            [class]="'status-' + (tender.status?.toLowerCase() || 'unknown')"
+          >
+            {{ tender.status || "Unknown" }}
+          </span>
+        </div>
+        <div class="tender-details">
+          <p><strong>Type:</strong> {{ tender.type }}</p>
+          <p><strong>Category:</strong> {{ tender.category || "N/A" }}</p>
+          <p><strong>Date:</strong> {{ tender.date }}</p>
+          <p>
+            <strong>Location:</strong> {{ tender.city || "N/A"
+            }}{{ tender.postal_code ? ", " + tender.postal_code : "" }}
+          </p>
+        </div>
+        <div class="tender-actions">
+          <button (click)="onViewDetails(tender)" class="view-details-btn">
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal/Overlay for Detailed View -->
+    <div
+      class="tender-detail-overlay"
+      *ngIf="showDetail()"
+      (click)="closeDetail()"
+      (keydown)="closeDetail()"
+    >
+      <div
+        class="tender-detail-modal"
+        (click)="$event.stopPropagation()"
+        (keydown)="closeDetail()"
+      >
+        <button class="close-btn" (click)="closeDetail()" aria-label="Close">
+          &times;
+        </button>
+        <ng-container *ngIf="detailLoading()">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading details...</p>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="detailError()">
+          <div class="error">
+            <p>{{ detailError() }}</p>
+          </div>
+        </ng-container>
+        <ng-container
+          *ngIf="!detailLoading() && !detailError() && detailedTender"
+        >
+          <!-- Debug Information (remove in production) -->
+          <!-- <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-size: 12px; border-radius: 4px;">
+            <strong>Debug Info:</strong>
+            <br>Loading: {{ detailLoading() }}
+            <br>Error: {{ detailError() }}
+            <br>Has Data: {{ !!detailedTender }}
+            <br>Tender ID: {{ detailedTender.id || 'N/A' }}
+            <br>Data Keys: {{ getDataKeys(detailedTender) }}
+          </div> -->
+          
+          <app-tender-detailed-view
+            [tender]="detailedTender"
+          ></app-tender-detailed-view>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

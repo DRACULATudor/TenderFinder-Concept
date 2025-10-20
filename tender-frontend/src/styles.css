@@ -1,0 +1,324 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* ===== TENDER CARD TITLE CONSISTENCY ===== */
+
+/* Fixed height and consistent styling for tender titles */
+.tender-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem !important;
+  line-height: 1.4 !important;
+  flex: 1;
+  margin-right: 15px;
+  /* Fixed height to maintain consistency */
+  height: 3.36em !important; /* Exactly 2.4 lines at line-height 1.4 */
+  overflow: hidden !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  /* Ensure consistent word wrapping */
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  /* Prevent title from affecting card width */
+  max-width: 100% !important;
+}
+
+/* Ensure consistent card heights */
+.tender-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  min-height: 280px !important; /* Fixed minimum height */
+}
+
+/* Ensure tender header has consistent height */
+.tender-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  margin-bottom: 15px !important;
+  min-height: 60px !important; /* Fixed height for header section */
+}
+
+/* ===== CLEAN PROFESSIONAL TENDER MODAL ===== */
+
+/* Simple fade animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle hover animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(5px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* CLEAN MODAL CONTAINER */
+.tender-detail-modal {
+  background: #ffffff !important;
+  border: 1px solid #e0e7ff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  animation: fadeIn 0.3s ease-out !important;
+}
+
+/* PROFESSIONAL CONTENT CONTAINER */
+.tender-detailed-content {
+  background: transparent !important;
+  border: none !important;
+  padding: 2rem !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #374151;
+  line-height: 1.6;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* CLEAN HEADER */
+.tender-header {
+  background: rgb(248, 238, 179);
+  color: #1e293b;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid #e2e8f0;
+  border-bottom: 2px solid #e2e8f0;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tender-header h2, .tender-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: -0.025em;
+}
+
+.tender-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.tender-id {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.tender-id:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  transform: translateY(-1px);
+}
+
+/* PROFESSIONAL CONTENT SECTIONS */
+.section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.section:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.section-title {
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.icon {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  opacity: 0.8;
+}
+
+/* CLEAN STATUS BADGES */
+.badge, .tender-type {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: all 0.2s ease;
+  margin: 0.25rem;
+}
+
+.badge-primary, .tender-type {
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+}
+
+.badge:hover, .tender-type:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #e2e8f0;
+}
+
+/* CLEAN GRIDS */
+.cpv-grid, .criteria-grid, .terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cpv-item, .criteria-item, .term-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.cpv-item:hover, .criteria-item:hover, .term-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.cpv-code {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.cpv-label, .criteria-description, .term-note {
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* CLEAN TIMELINE */
+.timeline-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1.25rem;
+}
+
+.timeline-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid #64748b;
+  transition: all 0.2s ease;
+}
+
+.timeline-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left-color: #1e293b;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .tender-header h2, .tender-title {
+    font-size: 1.5rem;
+  }
+  
+  .cpv-grid, .criteria-grid, .terms-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section {
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Utility classes */
+.text-center {
+  text-align: center;
+}
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }

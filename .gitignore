@@ -1,0 +1,31 @@
+# Virtual Environment
+venv/
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# IDE Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output Files
+*.csv
+Tenders List
+output/
+data/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+tenderfinder-bc24a-d9dff558c9fe.json
