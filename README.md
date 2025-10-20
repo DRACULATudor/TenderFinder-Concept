@@ -28,12 +28,6 @@ Predominantly JavaScript (Node.js) with some Python utilities (for scraping or N
 
 ---
 
-## Demo
-
-Add screenshots, gifs, or a short demo link here.
-
----
-
 ## Prerequisites
 
 - Node.js 16+ (or version used in your repo)
